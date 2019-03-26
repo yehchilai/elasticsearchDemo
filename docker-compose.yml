@@ -1,0 +1,31 @@
+#  docker run -d --name elasticsearch --net elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" elasticsearch:tag
+# docker run -d --name kibana --net somenetwork -p 5601:5601 kibana:tag
+version: '3'
+
+services:
+  elasticsearch:
+    image: elasticsearch:6.6.2
+    environment:
+      - discovery.type=single-node
+      # - cluster.name=docker-cluster
+      # - bootstrap.memory_lock=true
+      # - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - 9200:9200
+      - 9300:9300
+    networks:
+      - es
+    volumes:
+      - esdata1:/usr/share/elasticsearch/data
+  kibana:
+    image: docker.elastic.co/kibana/kibana:6.6.2
+    ports:
+      - 5601:5601
+    networks:
+      - es
+    depends_on:
+      - elasticsearch
+networks:
+  es:
+volumes:
+  esdata1:
